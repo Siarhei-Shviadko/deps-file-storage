@@ -9,4 +9,4 @@
 	url = git@github.com:epam/deps-observability-instrumentation.git
 [submodule "vendors/deps-message-flow"]
 	path = vendors/deps-message-flow
-	url = ../deps-message-flow.git
+	url = git@github.com:epam/deps-message-flow.git
