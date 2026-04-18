@@ -1,0 +1,96 @@
+version: "3.4"
+
+services:
+  file-storage:
+    build:
+      context: .
+      dockerfile: ./etc/deps-file-storage/Dockerfile
+      target: develop
+      args:
+        REPOSITORY_URL: "${REPOSITORY_URL}"
+      cache_from:
+        - "file-storage-dev:latest"
+    env_file:
+      - ./etc/deps-file-storage/env/.dev.env
+      - .env
+    networks:
+      - deps-network
+    ports:
+      - "8004:8004"
+    volumes:
+      - file_storage_volume:/media
+      - ./src/deps_file_storage:/app/deps_file_storage
+      - ./src/tests:/app/tests
+      - ./src/poetry.lock:/app/poetry.lock
+      - ./src/pyproject.toml:/app/pyproject.toml
+      - ./vendors:/vendors
+      - ./src/setup.cfg:/app/setup.cfg
+      - ./src/requirements.txt:/app/requirements.txt
+    stdin_open: true
+    tty: true
+
+  file-storage-consumer:
+    container_name: deps-file-storage-consumer
+    build:
+      context: .
+      dockerfile: ./etc/deps-file-storage/Dockerfile
+      target: develop
+      args:
+        REPOSITORY_URL: "${REPOSITORY_URL}"
+      cache_from:
+        - "file-storage:latest"
+    env_file:
+      - ./etc/deps-file-storage/env/.dev.env
+      - .env
+    networks:
+      - deps-network
+    volumes:
+      - file_storage_volume:/media
+      - ./src/deps_file_storage:/app/deps_file_storage
+      - ./src/tests:/app/tests
+      - ./src/poetry.lock:/app/poetry.lock
+      - ./src/pyproject.toml:/app/pyproject.toml
+      - ./vendors:/vendors
+      - ./src/setup.cfg:/app/setup.cfg
+      - ./src/requirements.txt:/app/requirements.txt
+    stdin_open: true
+    tty: true
+
+  file-storage-nginx:
+    build:
+      context: .
+      dockerfile: ./etc/deps-file-storage-nginx/Dockerfile
+      args:
+        config: ./etc/deps-file-storage-nginx/nginx.dev.conf
+        REPOSITORY_URL: "${REPOSITORY_URL}"
+      cache_from:
+        - "file-storage-nginx:latest"
+    depends_on:
+      - file-storage
+    networks:
+      - deps-network
+    ports:
+      - "8003:8000"
+
+  migrator:
+    build:
+      context: .
+      dockerfile: ./etc/migrator/Dockerfile
+      args:
+        REPOSITORY_URL: "${REPOSITORY_URL}"
+      cache_from:
+        - "file-storage-migrator:latest"
+    env_file: ./etc/migrator/env/.dev.env
+    external_links:
+      - deps-postgres:postgres
+    networks:
+      - deps-network
+    volumes:
+      - ./etc/migrator/migrations:/app/migrations
+
+networks:
+  deps-network:
+    external: true
+
+volumes:
+  file_storage_volume:

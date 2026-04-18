@@ -1,0 +1,63 @@
+file_storage:
+  image:
+    path: '/deps-presale-x01/deps-file-storage'
+    pullPolicy: Always
+  resources: {}
+
+file_storage_consumer:
+  image:
+    path: '/deps-presale-x01/deps-file-storage'
+    pullPolicy: Always
+  resources: {}
+
+file_storage_nginx:
+  image:
+    path: '/deps-presale-x01/deps-file-storage-nginx'
+    pullPolicy: Always
+  resources: {}
+
+migrator_update:
+  image:
+    path: '/deps-presale-x01/deps-file-storage-migrator'
+    pullPolicy: Always
+
+file_storage_settings:
+  ENV: presale
+  DATABASE_REQUIRE_SECURE_TRANSPORT: false
+
+  FILE_STORAGE_LOGGER_LEVEL: 'INFO'
+
+migration_settings:
+  DATABASE_USER: file_storage_presale
+  DATABASE_REQUIRE_SECURE_TRANSPORT: false
+
+serviceAccount:
+  name: deps-presale
+
+# ATTENTION: Remove inject_secrets section to use the Helm chart outside the EPAM network
+inject_secrets:
+  enabled: false
+  mountSecrets:
+  - name: CELERY_BACKEND_URL
+    value: 'vault:k8s-presale/data/celery-backend-url#celery-backend-url'
+  - name: CELERY_BROKER_URL
+    value: 'vault:k8s-presale/data/celery-broker-url#celery-broker-url'
+  - name: AUTH_CERTS_ENDPOINT
+    value: 'vault:k8s-presale/data/keycloak-certs-endpoint#keycloak-certs-endpoint'
+  - name: DATABASE_HOST
+    value: 'vault:k8s-presale/data/database-host#database-host'
+  - name: AWS_ACCESS_KEY_ID
+    value: 'vault:k8s-presale/data/file-storage-aws-credentials#aws-access-key-id'
+  - name: AWS_SECRET_ACCESS_KEY
+    value: 'vault:k8s-presale/data/file-storage-aws-credentials#aws-secret-access-key'
+
+helm:
+  helm_logs_job_enabled: false
+
+csi:
+  vault_namespace: 'k8s-presale'
+  roleName: 'k8s-presale'
+  vaultKubernetesMountPath: 'kubernetes-presale'
+
+service_account:
+  serviceAccountName: 'deps-presale'

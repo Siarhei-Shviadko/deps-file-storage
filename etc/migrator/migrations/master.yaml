@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: ./migrations/01-add-user-has-file-table.yaml
+  - include:
+      file: ./migrations/02-add-organisation-has-file-table.yaml
+  - include:
+      file: ./migrations/03-add-indexes.yaml

@@ -1,0 +1,18 @@
+databaseChangeLog:
+- changeSet:
+    id: 1
+    author: Valentin Vorobyev
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+            name: organisation_name
+            type: VARCHAR
+        - column:
+            constraints:
+              nullable: false
+            name: filename
+            type: VARCHAR
+        tableName: organisation_has_file

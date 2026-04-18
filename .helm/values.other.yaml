@@ -1,0 +1,59 @@
+file_storage:
+  image:
+    path: '/deps-platform/deps-file-storage'
+  resources: {}
+
+file_storage_consumer:
+  image:
+    path: '/deps-platform/deps-file-storage'
+  resources: {}
+
+file_storage_nginx:
+  image:
+    path: '/deps-platform/deps-file-storage-nginx'
+  resources: {}
+
+migrator_update:
+  image:
+    path: '/deps-platform/deps-file-storage-migrator'
+
+file_storage_settings:
+  ENV: other
+  DATABASE_REQUIRE_SECURE_TRANSPORT: false
+
+  FILE_STORAGE_LOGGER_LEVEL: 'INFO'
+
+migration_settings:
+  DATABASE_USER: file_storage_other
+  DATABASE_REQUIRE_SECURE_TRANSPORT: false
+
+serviceAccount:
+  name: deps-other
+
+# ATTENTION: Remove inject_secrets section to use the Helm chart outside the EPAM network
+inject_secrets:
+  enabled: false
+  mountSecrets:
+  - name: CELERY_BACKEND_URL
+    value: 'vault:k8s-other/data/celery-backend-url#celery-backend-url'
+  - name: CELERY_BROKER_URL
+    value: 'vault:k8s-other/data/celery-broker-url#celery-broker-url'
+  - name: AUTH_CERTS_ENDPOINT
+    value: 'vault:k8s-other/data/keycloak-certs-endpoint#keycloak-certs-endpoint'
+  - name: DATABASE_HOST
+    value: 'vault:k8s-other/data/database-host#database-host'
+  - name: AWS_ACCESS_KEY_ID
+    value: 'vault:k8s-other/data/file-storage-aws-credentials#aws-access-key-id'
+  - name: AWS_SECRET_ACCESS_KEY
+    value: 'vault:k8s-other/data/file-storage-aws-credentials#aws-secret-access-key'
+
+helm:
+  helm_logs_job_enabled: false
+
+csi:
+  vault_namespace: 'k8s-other'
+  roleName: 'k8s-other'
+  vaultKubernetesMountPath: 'kubernetes-other'
+
+service_account:
+  serviceAccountName: 'deps-other'

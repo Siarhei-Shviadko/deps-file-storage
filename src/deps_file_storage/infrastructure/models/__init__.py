@@ -1,0 +1,2 @@
+from .organisation_has_file import organisation_has_file_table
+from .user_has_file import user_has_file_table

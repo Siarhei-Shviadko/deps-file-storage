@@ -1,0 +1,19 @@
+version: "3.4"
+
+services:
+  file-storage:
+    image: "file-storage-dev"
+    container_name: deps-file-storage
+
+  file-storage-consumer:
+    image: "file-storage-dev"
+    container_name: deps-file-storage-consumer
+    command: python -m deps_file_storage consume
+
+  file-storage-nginx:
+    image: "file-storage-nginx"
+    container_name: deps-file-storage-nginx
+
+  migrator:
+    image: "file-storage-migrator"
+    container_name: deps-file-storage-migrator

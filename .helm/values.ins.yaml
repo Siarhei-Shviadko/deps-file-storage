@@ -1,0 +1,50 @@
+file_storage:
+  image:
+    path: "/deps-platform/deps-file-storage"
+  resources: {}
+  volume:
+    enabled: false
+
+file_storage_consumer:
+  image:
+    path: "/deps-platform/deps-file-storage"
+  resources: {}
+  volume:
+    enabled: false
+
+file_storage_nginx:
+  image:
+    path: "/deps-platform/deps-file-storage-nginx"
+  resources: {}
+
+migrator_update:
+  image:
+    path: "/deps-platform/deps-file-storage-migrator"
+
+file_storage_settings:
+  ENV: insurance
+  DATABASE_REQUIRE_SECURE_TRANSPORT: false
+  DEFAULT_STORAGE: S3_STORAGE
+  S3_BUCKET_NAME: bucket_name
+  S3_ENDPOINT_URL: https://s3.us-east-1.amazonaws.com
+
+  FILE_STORAGE_LOGGER_LEVEL: "INFO"
+
+migration_settings:
+  DATABASE_USER: deps-ins
+  DATABASE_REQUIRE_SECURE_TRANSPORT: false
+
+# The service account is necessary to obtain secrets from HashiCorp Vault
+serviceAccount:
+  name: default
+
+helm:
+  helm_logs_job_enabled: false
+
+csi:
+  vault_namespace: 'k8s-ins'
+  roleName: 'k8s-ins'
+  vaultKubernetesMountPath: 'kubernetes-ins'
+
+service_account:
+  serviceAccountName: 'deps-insurance'

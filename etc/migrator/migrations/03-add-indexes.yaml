@@ -1,0 +1,33 @@
+databaseChangeLog:
+- changeSet:
+    id: 1
+    author: Aleksandr Balykin
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: filename
+        - column:
+            name: organisation_name
+        indexName: index_organisation_name_filename
+        tableName: organisation_has_file
+    rollback:
+      - dropIndex:
+          indexName: index_organisation_name_filename
+          tableName: organisation_has_file
+- changeSet:
+    id: 2
+    author: Aleksandr Balykin
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: filename
+        - column:
+            name: user_id
+        indexName: index_user_id_filename
+        tableName: user_has_file
+    rollback:
+      - dropIndex:
+          indexName: index_user_id_filename
+          tableName: user_has_file

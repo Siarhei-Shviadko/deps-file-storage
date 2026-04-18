@@ -1,0 +1,12 @@
+[submodule "vendors/deps-async-datasource"]
+	path = vendors/deps-async-datasource
+	url = git@github.com:epam/deps-async-datasource.git
+[submodule "vendors/deps-pipelines"]
+	path = vendors/deps-pipelines
+	url = git@github.com:epam/deps-pipelines.git
+[submodule "vendors/deps-observability-instrumentation"]
+	path = vendors/deps-observability-instrumentation
+	url = git@github.com:epam/deps-observability-instrumentation.git
+[submodule "vendors/deps-message-flow"]
+	path = vendors/deps-message-flow
+	url = ../deps-message-flow.git

@@ -1,0 +1,48 @@
+version: "3.4"
+
+services:
+  file-storage:
+    env_file: ./etc/deps-file-storage/env/.test.env
+    volumes:
+      - test-cache:/tmp/test_cache
+      - ./src/deps_file_storage:/app/deps_file_storage
+      - ./src/tests:/app/tests
+      - ./src/poetry.lock:/app/poetry.lock
+      - ./src/pyproject.toml:/app/pyproject.toml
+      - ./vendors:/vendors
+      - ./src/setup.cfg:/app/setup.cfg
+      - ./src/requirements.txt:/app/requirements.txt
+
+  test-database:
+    image: "${REPOSITORY_URL}/base/postgresql-bitnami:17.5.0-debian-12-r2"
+    restart: 'no'
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=test-db
+      - POSTGRES_USER=deps-postgres
+      - POSTGRES_PASSWORD=deps-postgres-password
+      - POSTGRES_MAX_CONNECTIONS=100
+
+  migrator:
+    image: "${REPOSITORY_URL}/base/migrator:latest"
+    env_file: ./etc/migrator/env/.test.env
+    depends_on:
+      - test-database
+    volumes:
+      - ./etc/migrator/migrations:/app/migrations
+
+  azure-storage:
+    image: "${REPOSITORY_URL}/base/azure-storage:latest"
+    hostname: azure
+    ports:
+      - "10000:10000"
+    networks:
+      - deps-network
+
+networks:
+  deps-network:
+    external: true
+
+volumes:
+  test-cache:

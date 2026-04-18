@@ -1,0 +1,18 @@
+databaseChangeLog:
+- changeSet:
+    id: 1
+    author: Dzmitry Orgish
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+            name: user_id
+            type: VARCHAR
+        - column:
+            constraints:
+              nullable: false
+            name: filename
+            type: VARCHAR
+        tableName: user_has_file

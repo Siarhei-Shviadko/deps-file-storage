@@ -1,0 +1,161 @@
+{{- if .Values.vault_settings.azure_key_vault }}
+apiVersion: secrets-store.csi.x-k8s.io/v1
+kind: SecretProviderClass
+metadata:
+  name: {{ .Values.csi.csi_default_name }}
+spec:
+  provider: azure
+  secretObjects:
+  - data:
+    - key: file-storage-db-user
+      objectName: file-storage-db-user
+    - key: file-storage-db-password
+      objectName: file-storage-db-password
+    - key: file-storage-db
+      objectName: file-storage-db
+    - key: aws-access-key-id
+      objectName: aws-access-key-id
+    - key: aws-secret-access-key
+      objectName: aws-secret-access-key
+    - key: db-host
+      objectName: db-host
+    - key: keycloak-certs-endpoint
+      objectName: keycloak-certs-endpoint
+    - key: message-broker-driver
+      objectName: message-broker-driver
+    - key: message-broker-connection-string
+      objectName: message-broker-connection-string
+    - key: cipher-key
+      objectName: cipher-key
+    - key: azure-connection-string
+      objectName: azure-connection-string
+    - key: azure-container-name
+      objectName: azure-container-name
+    - key: rabbitmq-password
+      objectName: rabbitmq-password
+    - key: kafka-sasl-username
+      objectName: kafka-sasl-username
+    - key: kafka-sasl-password
+      objectName: kafka-sasl-password
+    - key: access-mode
+      objectName: access-mode
+    - key: auth-enabled
+      objectName: auth-enabled
+    - key: gcp-api-key
+      objectName: gcp-api-key
+    - key: gcp-location
+      objectName: gcp-location
+    - key: gcp-processor-id
+      objectName: gcp-processor-id
+    - key: gcp-project-id
+      objectName: gcp-project-id
+    - key: async-file-storage
+      objectName: async-file-storage
+    - key: files-deletion-enabled
+      objectName: files-deletion-enabled
+    secretName: {{ .Values.secrets.deps_file_storage.secretName }}
+    type: Opaque
+  parameters:
+    keyvaultName: {{ .Values.azure_kv_settings.keyvaultName }}
+    tenantId: {{ .Values.azure_kv_settings.tenantId }}
+    vaultKubernetesMountPath: {{ .Values.csi.vaultKubernetesMountPath }}
+    usePodIdentity: "false"
+    useVMManagedIdentity: "true"
+    userAssignedIdentityID: {{ .Values.azure_kv_settings.userAssignedIdentityID }}
+    resourceGroup:  {{ .Values.azure_kv_settings.resourceGroup }}
+    subscriptionId: {{ .Values.azure_kv_settings.subscriptionId }}
+    objects: |
+      array:
+        - |
+          objectName: "async-file-storage"
+          objectType: secret
+
+        - |
+          objectName: "gcp-api-key"
+          objectType: secret
+
+        - |
+          objectName: "gcp-location"
+          objectType: secret
+
+        - |
+          objectName: "gcp-processor-id"
+          objectType: secret
+
+        - |
+          objectName: "gcp-project-id"
+          objectType: secret
+
+        - |
+          objectName: "file-storage-db-user"
+          objectType: secret
+
+        - |
+          objectName: "file-storage-db-password"
+          objectType: secret
+
+        - |
+          objectName: "file-storage-db"
+          objectType: secret
+
+        - |
+          objectName: "aws-access-key-id"
+          objectType: secret
+
+        - |
+          objectName: "aws-secret-access-key"
+          objectType: secret
+
+        - |
+          objectName: "db-host"
+          objectType: secret
+
+        - |
+          objectName: "keycloak-certs-endpoint"
+          objectType: secret
+
+        - |
+          objectName: "message-broker-driver"
+          objectType: secret
+
+        - |
+          objectName: "message-broker-connection-string"
+          objectType: secret
+
+        - |
+          objectName: "cipher-key"
+          objectType: secret
+
+        - |
+          objectName: "azure-connection-string"
+          objectType: secret
+
+        - |
+          objectName: "azure-container-name"
+          objectType: secret
+
+        - |
+          objectName: "rabbitmq-password"
+          objectType: secret
+
+        - |
+          objectName: "kafka-sasl-username"
+          objectType: secret
+
+        - |
+          objectName: "kafka-sasl-password"
+          objectType: secret
+
+        - |
+          objectName: "access-mode"
+          objectType: secret
+
+        - |
+          objectName: "auth-enabled"
+          objectType: secret
+
+        - |
+          objectName: "files-deletion-enabled"
+          objectType: secret
+
+{{- end }}

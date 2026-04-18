@@ -1,0 +1,9 @@
+.idea
+.dockerignore
+Dockerfile
+README.md
+**/.DS_Store
+**/*.pyc
+**/*.pyo
+**/__pycache__
+skaffold

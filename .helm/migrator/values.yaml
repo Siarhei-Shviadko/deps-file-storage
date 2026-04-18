@@ -1,0 +1,273 @@
+# Default values for deps-file-storage.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# kubectl create secret generic file-storage-database --from-literal=user="<file_storage-db_user>" --from-literal=password="<file_storage_db_user_password>"
+# kubectl create secret generic file-storage-aws-credentials --from-literal=aws-access-key-id="<aws-access-key-id>" --from-literal=aws-secret-access-key="<aws-secret-access-key>"
+# kubectl create secret generic keycloak-certs-endpoint --from-literal=keycloak-certs-endpoint='<https://KEYCLOAK_URL/auth/realms/Test/protocol/openid-connect/certs>'
+# kubectl create secret generic database-host --from-literal=database-host='<DATABASE_HOST>'
+secrets:
+  file_storage_database:
+    secretName: file-storage-database
+  file_storage_aws_credentials:
+    secretName: file-storage-aws-credentials
+  keycloak_certs_endpoint:
+    secretName: keycloak-certs-endpoint
+  azure_blob_storage:
+    secretName: azure-blob-storage
+  deps_file_storage_migrator:
+    secretName: deps-file-storage-migrator
+  database_ssl_secret:
+    secretName: database-ssl-secret
+
+registry: ""
+env: ""
+
+helm_logs_job:
+  image:
+    path: '/base/kubernetes-helm'
+    pullPolicy: IfNotPresent
+    tag: "0.1.1"
+  serviceAccountName: gitlab-ci
+  resources: {}
+
+migrator_update:
+  image:
+    path: '/deps-dev-x01/deps-file-storage-migrator'
+    pullPolicy: IfNotPresent
+    tag: ""
+  imagePullSecrets: artifactory
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+file_storage:
+  replicaCount: 1
+  image:
+    path: '/deps-dev-x01/deps-file-storage'
+    pullPolicy: IfNotPresent
+    tag: ""
+  imagePullSecrets: 'artifactory'
+  podAnnotations: {}
+  service:
+    type: "ClusterIP"
+    port: 8004
+    portname: 'fs-svc-prt'
+    protocol: TCP
+  container:
+    port: 8004
+    portname: 'fs-cnt-prt'
+    protocol: TCP
+  resources: {}
+  #   limits:
+  #     cpu: 300m
+  #     memory: 1100Mi
+  #   requests:
+  #     cpu: 200m
+  #     memory: 350Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  INSTALL_DEV_DEPENDENCIES: 'true'
+  volume:
+    enabled: true
+    capacity: '6Gi'
+    storage_class_name: 'nfs-client'
+    accessModes: 'ReadWriteOnce'
+
+file_storage_consumer:
+  replicaCount: 1
+  image:
+    path: '/deps-dev-x01/deps-file-storage'
+    pullPolicy: IfNotPresent
+    tag: ""
+  imagePullSecrets: 'artifactory'
+  podAnnotations: {}
+  resources: {}
+  #    limits:
+  #      cpu: 300m
+  #      memory: 1100Mi
+  #    requests:
+  #      cpu: 200m
+  #      memory: 350Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  volume:
+    enabled: true
+    storage_class_name: 'nfs-client'
+
+file_storage_nginx:
+  replicaCount: 1
+  image:
+    path: '/deps-dev-x01/deps-file-storage-nginx'
+    pullPolicy: IfNotPresent
+    tag: ""
+  imagePullSecrets: 'artifactory'
+  podAnnotations: {}
+  service:
+    type: ClusterIP
+    port: 8000
+    portname: 'fsn-svc-prt'
+    protocol: TCP
+  container:
+    port: 8000
+    portname: 'fsn-cnt-prt'
+    protocol: TCP
+  resources: {}
+  #    limits:
+  #      cpu: 100m
+  #      memory: 100Mi
+  #    requests:
+  #      cpu: 80m
+  #      memory: 50Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+file_storage_settings:
+  ENV: development
+  DEFAULT_STORAGE: FILE_STORAGE
+  MEDIA_ROOT: '/media/files'
+
+  # add gcp variables in order to use GCP storage
+  GCP_BLOB_STORAGE_BUCKET_NAME: ''
+  GCP_BLOB_STORAGE_AUTH_KEY: ''
+  MEDIA_EXPIRES: '60'
+
+  DATABASE_PORT: 5432
+
+  AUTH_VERIFY_SSL: false
+
+  ADMINS_GROUP: deps-admins
+
+  S3_ENDPOINT_URL: ''
+  S3_BUCKET_NAME: ''
+
+  FILE_STORAGE_LOGGER_LEVEL: 'INFO'
+
+migration_settings:
+  DATABASE_PORT: '5432'
+  DATABASE_REQUIRE_SECURE_TRANSPORT: false
+  DATABASE_SSLKEY_PATH: '/home/dbcerts/tls.key'
+  DATABASE_SSLCERT_PATH: '/home/dbcerts/tls.crt'
+  DATABASE_SSLROOTCERT_PATH: '/home/dbcerts/root.crt'
+
+certs_location:
+  database_sslcerts_path: "/home/dbcerts"
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+
+# The service account is necessary to obtain secrets from HashiCorp Vault
+serviceAccount:
+  name: deps-develop
+
+migrator:
+  args: ''
+
+# ATTENTION: Remove inject_secrets section to use the Helm chart outside the EPAM network
+inject_secrets:
+  enabled: false
+  mountSecrets:
+  - name: DATABASE_USER
+    value: 'vault:k8s-dev/data/file-storage-database#user'
+  - name: DATABASE_PASSWORD
+    value: 'vault:k8s-dev/data/file-storage-database#password'
+  - name: AUTH_CERTS_ENDPOINT
+    value: 'vault:k8s-dev/data/keycloak-certs-endpoint#keycloak-certs-endpoint'
+  - name: DATABASE_HOST
+    value: 'vault:k8s-dev/data/database-host#database-host'
+  - name: AWS_ACCESS_KEY_ID
+    value: 'vault:k8s-dev/data/file-storage-aws-credentials#aws-access-key-id'
+  - name: AWS_SECRET_ACCESS_KEY
+    value: 'vault:k8s-dev/data/file-storage-aws-credentials#aws-secret-access-key'
+
+helm:
+  enabled: false
+
+csi:
+  csi_default_name: deps-file-storage-migrator
+  vault_namespace: 'k8s-dev'
+  roleName: 'k8s-dev'
+  vaultKubernetesMountPath: 'kubernetes-dev'
+
+secrets_location:
+  secrets_default_path: "/mnt/secrets-store"
+
+service_account:
+  serviceAccountName: 'deps-develop'
+
+secret_project_id:
+  id: ""
+
+azure_kv_settings:
+  keyvaultName: ""
+  tenantId: ""
+  userAssignedIdentityID: ""
+  resourceGroup: ""
+  subscriptionId: ""
+
+vault_settings:
+  enabled: false
+  hashicorp_vault: false
+  azure_key_vault: false
+  gcp_secret_manager: false
+  aws_secret_manager: false
+  aws_secret_manager_region: ''
+
+migrator_vault_enabled:
+  env:
+  - name: DATABASE_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: deps-file-storage-migrator
+        key: file-storage-db-password
+  - name: DATABASE_USER
+    valueFrom:
+      secretKeyRef:
+        name: deps-file-storage-migrator
+        key: file-storage-db-user
+  - name: DATABASE_HOST
+    valueFrom:
+      secretKeyRef:
+        name: deps-file-storage-migrator
+        key: db-host
+  - name: DATABASE_DB
+    valueFrom:
+      secretKeyRef:
+        name: deps-file-storage-migrator
+        key: file-storage-db
+
+migrator_vault_disabled:
+  env:
+  - name: DATABASE_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: file-storage-database
+        key: password
+  - name: DATABASE_USER
+    valueFrom:
+      secretKeyRef:
+        name: file-storage-database
+        key: user
+  - name: DATABASE_HOST
+    valueFrom:
+      secretKeyRef:
+        name: common-secret
+        key: database-host
+  - name: DATABASE_DB
+    valueFrom:
+      secretKeyRef:
+        name: file-storage-database
+        key: database-db
