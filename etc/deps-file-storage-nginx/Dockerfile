@@ -1,5 +1,5 @@
 ARG REPOSITORY_URL=""
-FROM ${REPOSITORY_URL}/base/nginx:1.20.2
+FROM ${REPOSITORY_URL:+$REPOSITORY_URL/base/}nginx:1.20.2
 
 RUN echo "deb http://deb.debian.org/debian bullseye main" >> /etc/apt/sources.list && \
     apt-get update && \

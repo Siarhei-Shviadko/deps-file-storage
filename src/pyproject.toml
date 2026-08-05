@@ -17,7 +17,7 @@ werkzeug = "^3.1.5"
 python-multipart = "^0.0.22"
 uvicorn = "^0.15.0"
 starlette = "^0.49.1"
-requests = "^2.32.5"
+requests = "^2.33.0"
 urllib3 = "^2.6.0"
 
 python-magic = "0.4.18"
@@ -32,7 +32,7 @@ azure-core = "^1.38.0"
 aiofiles = "^23.1.0"
 aiohttp = "^3.13.3"
 SQLAlchemy = "1.3.12"
-Authlib = ">=1.6.5"
+Authlib = ">=1.6.11"
 asyncer = "^0"
 pyasn1 = "^0.6.2"
 
@@ -64,6 +64,8 @@ httpx = "^0.27.0"
 
 ipdb = "^0.13.13"
 see = "^1.4.1"
+# setuptools 82+ dropped pkg_resources; flake8-commas 2.x (pulled by wemake-python-styleguide) still imports it for flake8 plugins.
+setuptools = ">=70,<82"
 
 [build-system]
 requires = ["poetry>=0.12"]

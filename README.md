@@ -2,7 +2,7 @@
 
 Service for downloading and uploading files.
 
-**JIRA TICKET [RSEGDSSEAC-1158](https://jira-host/plugins/servlet/mobile#issue/RSEGDSSEAC-1158)**
+**JIRA TICKET [RSEGDSSEAC-1158](https://jiraeu.epam.com/plugins/servlet/mobile#issue/RSEGDSSEAC-1158)**
 
 #### TODO:
 1. Ability to add new engines:
