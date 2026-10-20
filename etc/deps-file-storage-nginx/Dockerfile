@@ -1,8 +1,7 @@
 ARG REPOSITORY_URL=""
-FROM ${REPOSITORY_URL:+$REPOSITORY_URL/base/}nginx:1.20.2
+FROM ${REPOSITORY_URL:+$REPOSITORY_URL/base/}nginx:1.26.3
 
-RUN echo "deb http://deb.debian.org/debian bullseye main" >> /etc/apt/sources.list && \
-    apt-get update && \
+RUN apt-get update && \
     apt-get install -y openssl libxml2 && \
     apt-get autoremove -y
 

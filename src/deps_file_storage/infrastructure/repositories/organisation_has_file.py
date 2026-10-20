@@ -42,7 +42,7 @@ class OrganisationHasFileRepository(
             conn.execute(query)
 
     def get_organisation_files(self, organisation_name: str) -> List[str]:
-        query = select([organisation_has_file_table.c.filename]).where(
+        query = select(organisation_has_file_table.c.filename).where(
             organisation_has_file_table.c.organisation_name == organisation_name,
         )
 
@@ -52,7 +52,7 @@ class OrganisationHasFileRepository(
         return [filename_row[0] for filename_row in filename_rows]
 
     def get_organisation_file_by_name(self, organisation_name: str, file_name: str) -> Optional[str]:
-        query = select([organisation_has_file_table.c.filename]).where(
+        query = select(organisation_has_file_table.c.filename).where(
             and_(
                 organisation_has_file_table.c.filename == file_name,
                 organisation_has_file_table.c.organisation_name == organisation_name,
