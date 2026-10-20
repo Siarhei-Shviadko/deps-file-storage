@@ -19,7 +19,7 @@ class UserHasFileRepository(IUserHasFileRepository):
             conn.execute(stmt)
 
     def get_user_files(self, user_pk: str) -> List[str]:
-        stmt = select([user_has_file_table.c.filename]).where(
+        stmt = select(user_has_file_table.c.filename).where(
             user_has_file_table.c.user_id == user_pk,
         )
 
@@ -29,7 +29,7 @@ class UserHasFileRepository(IUserHasFileRepository):
         return list(map(itemgetter(0), files))
 
     def get_user_file_by_name(self, user_pk: str, filename: str) -> Optional[str]:
-        query = select([user_has_file_table.c.filename]).where(
+        query = select(user_has_file_table.c.filename).where(
             and_(
                 user_has_file_table.c.filename == filename,
                 user_has_file_table.c.user_id == user_pk,
